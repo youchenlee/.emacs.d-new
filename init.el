@@ -137,6 +137,79 @@
                      (sanityinc/time-subtract-millis after-init-time before-init-time))))
 
 
+
+; hide-show mode
+(add-hook 'php-mode-hook
+  (lambda()
+    (hs-minor-mode 1)))
+; hide-show mode
+(add-hook 'html-mode-hook
+  (lambda()
+    (hs-minor-mode 1)))
+
+(global-set-key (kbd "C-c -") 'hs-hide-block)
+(global-set-key (kbd "C-c =")  'hs-show-block)
+(global-set-key (kbd "C-c <up>")    'hs-show-all)
+(global-set-key (kbd "C-c <down>")  'hs-hide-level)
+
+; change backup folder
+;; make backup to a designated dir, mirroring the full path
+
+(defun my-backup-file-name (fpath)
+  "Return a new file path of a given file path.
+If the new path's directories does not exist, create them."
+  (let* (
+        (backupRootDir "~/.emacs.d/emacs-backup/")
+        (filePath (replace-regexp-in-string "[A-Za-z]:" "" fpath )) ; remove Windows driver letter in path, ⁖ “C:”
+        (backupFilePath (replace-regexp-in-string "//" "/" (concat backupRootDir filePath "~") ))
+        )
+    (make-directory (file-name-directory backupFilePath) (file-name-directory backupFilePath))
+    backupFilePath
+  )
+)
+
+(setq make-backup-file-name-function 'my-backup-file-name)
+
+
+; twig / volt use web-mode
+(add-to-list 'auto-mode-alist '("\\.volt$" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.twig$" . web-mode))
+
+; clipboard
+(setq x-select-enable-clipboard t)
+(setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+
+;(setq x-select-enable-clipboard nil)
+;(setq x-select-enable-primary t)
+;(setq mouse-drag-copy-region t)
+
+; magit
+(global-set-key (kbd "C-c g") 'magit-status)
+
+; auto enable gitgutter+ for all 
+(global-git-gutter+-mode t)
+
+; php doc generator
+(require 'php-doc)
+(add-hook 'php-mode-hook
+           (lambda ()
+             (local-set-key (kbd "C-c <tab>") 'php-insert-doc-block)))
+
+; trailing whitespace
+(require 'highlight-chars)
+(add-hook 'prog-mode-hook 'hc-toggle-highlight-tabs)
+(add-hook 'prog-mode-hook 'hc-toggle-highlight-trailing-whitespace)
+
+; highlight FIXME, TODO...
+(require 'fic-mode)
+(add-hook 'prog-mode-hook 'turn-on-fic-mode)
+
+; switch between two recent buffers
+(defun switch-to-previous-buffer ()
+(interactive)
+(switch-to-buffer (other-buffer (current-buffer) 1)))
+(global-set-key (kbd "C-`") 'switch-to-previous-buffer)
+
 (provide 'init)
 
 ;; Local Variables:
